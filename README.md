@@ -50,6 +50,17 @@ Backend (New)
 The scoring logic originates from the frontend-only version of the project
 and has been refactored to support backend execution and reuse.
 
+## 🔌 Backend API
+
+### POST `/api/quiz/submit`
+Compute the winning scent persona based on accumulated scores.
+
+**Request**
+```json
+{
+  "scores": { "fruity": 0, "floral": 0, "woody": 0, "oriental": 0 }
+}
+
 ## Project structure
 
 ```text
