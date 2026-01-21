@@ -61,6 +61,13 @@ Compute the winning scent persona based on accumulated scores.
   "scores": { "fruity": 0, "floral": 0, "woody": 0, "oriental": 0 }
 }
 ```
+**Reponse**
+```json
+{
+  "winner": "woody",
+  "scores": { "fruity": 0, "floral": 0, "woody": 0, "oriental": 0 }
+}
+```
 
 ## Project structure
 
