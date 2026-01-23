@@ -7,79 +7,105 @@ import Cover from "./Cover";
 import GradientBackground from "./GradientBackground";
 import AnimatedBlobs from "./AnimatedBlobs";
 import { submitQuiz } from "../api/quiz";
+import { EMPTY, sumScores,resolveWinner } from "../lib/scoring";
 
 const personas = ["fruity", "floral", "woody", "oriental"];
 const tieBreak = ["oriental", "woody", "floral", "fruity"]; // 平分时优先级（可改）
 
-function pickWinner(scores) {
-  const maxVal = Math.max(...personas.map((p) => scores[p] ?? 0));
-  const candidates = personas.filter((p) => (scores[p] ?? 0) === maxVal);
-  if (candidates.length === 1) return candidates[0];
-  for (const t of tieBreak) if (candidates.includes(t)) return t;
-  return candidates[0];
-}
+const REPLAY_MS = 280;
+
+// function pickWinner(scores) {
+//   const maxVal = Math.max(...personas.map((p) => scores[p] ?? 0));
+//   const candidates = personas.filter((p) => (scores[p] ?? 0) === maxVal);
+//   if (candidates.length === 1) return candidates[0];
+//   for (const t of tieBreak) if (candidates.includes(t)) return t;
+//   return candidates[0];
+// }
 
 export default function ScentPersonalityQuiz() {
+
+  // ================= 1) useState / useMemo ==================
+
   const [started, setStarted] = useState(false);
   const [picked, setPicked] = useState(null); // record current option index
-
+  const [index, setIndex] = useState(0);
+  
   const questions = questionsData.questions ?? [];
   const total = questions.length;
 
-  const [index, setIndex] = useState(0);
-  const [scores, setScores] = useState({
-    fruity: 0,
-    floral: 0,
-    woody: 0,
-    oriental: 0,
-  });
+  const [phase, setPhase] = useState("quiz"); // "quiz" | "replay" | "result"
+  const [answers, setAnswers] = useState([]);// answers: store weights of selected options
+  
+  // const [loading, setLoading] = useState(false);
+  // const [error, setError] = useState(null);
 
+  const [animatedScores, setAnimatedScores] = useState(EMPTY);
+  const [finalScores, setFinalScores] = useState(EMPTY);
   const [winner, setWinner] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [stepIdx, setStepIdx] = useState(0);
 
-  const done = index >= total;
+  const done = index >= total; // enter replay
 
+  // ================= 2) useEffect ==================
+
+  // done -> compute final -> enter replay
   useEffect(() => {
+    if (!started) return;
     if (!done) return;
-    if(winner) return ;
-    if(loading) return;
+    if (phase !== "quiz") return;
 
-    (async () => {
-      try {
-        setLoading(true);
-        setError(null);
+    // final scores
+    let s = EMPTY;
+    for (const a of answers) s = sumScores(s, a.weights, personas);
 
-        const { winner: w } = await submitQuiz({ scores });
+    setFinalScores(s);
+    setWinner(resolveWinner(s)); // winner = final result
 
-        setWinner(w);
-      } catch (e) {
-        setError("Failed to get result. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    })();
-  }, [done, winner, loading, scores]);
+    // enter replay
+    setAnimatedScores(EMPTY);
+    setStepIdx(0);
+    setPhase("replay");
+  }, [done, started, phase, answers, personas]);
 
-  const result = winner ? resultsData[winner] : null;
+  // replay animation
+  useEffect(() => {
+    if (phase !== "replay") return;
 
-  if (done && loading) return <div>Calculating...</div>;
-  if (done && error) return <div>{error}</div>;
-  if (done && winner) return <Result data={resultsData[winner]} />;
-  if (done) return <div>Calculating...</div>;
+    const id = setInterval(() => {
+      setStepIdx((i) => {
+        const step = answers[i];
+        if (!step) {
+          clearInterval(id);
+          setPhase("result");
+          return i;
+        }
 
+        setAnimatedScores((prev) => sumScores(prev, step.weights, personas));
+        return i + 1;
+      });
+    }, 280);
 
+    return () => clearInterval(id);
+  }, [phase, answers, personas]);
+  
+  /* 
+   * useEffect(() => {
+   *   if (phase !== "result") return;
+   *   if (!winner) return;
+   *   submitQuiz({ winner }).catch(() => {});
+   * }, [phase, winner]);
+   */
+
+  // ================= 3) handlers ==================
+  
   const handlePick = (weights, optIndex) => {
     if (picked !== null) return; // 防连点
     setPicked(optIndex);
 
-    setScores((prev) => {
-      const next = { ...prev };
-      personas.forEach((p, i) => {
-        next[p] = (next[p] ?? 0) + (weights?.[i] ?? 0);
-      });
-      return next;
-    });
+    setAnswers((prev) => [
+      ...prev,
+      {qIndex: index, optIndex, weights: weights ?? [0, 0, 0, 0]},
+    ])
 
     setTimeout(() => {
       setIndex((prev) => prev + 1);
@@ -89,8 +115,17 @@ export default function ScentPersonalityQuiz() {
 
   const restart = () => {
     setIndex(0);
-    setScores({ fruity: 0, floral: 0, woody: 0, oriental: 0 });
+    setPicked(null);
+    setAnswers([]);
+    setAnimatedScores(EMPTY);
+    setFinalScores(EMPTY);
+    setWinner(null);
+    setStepIdx(0);
+    setPhase("quiz");
   };
+
+
+  // ================= 4) render ==================
 
   if (!started) {
     return <Cover onStart={() => setStarted(true)} />;
@@ -106,8 +141,52 @@ export default function ScentPersonalityQuiz() {
     );
   }
 
-  if (done) return <Result result={result} winner={winner} onRestart={restart} />;
+  // if (done) return <Result result={result} winner={winner} onRestart={restart} />;
 
+  if (phase === "replay") {
+    return (
+      <div className="max-w-3xl mx-auto p-6">
+        <h1 className="text-2xl font-semibold">Your Persona</h1>
+        <div className="mt-2 text-sm opacity-70">
+          Calculating… ({Math.min(stepIdx, answers.length)}/{answers.length})
+        </div>
+
+        <div className="mt-6 rounded-2xl border p-5 shadow-sm space-y-3">
+          {personas.map((p) => {
+            const maxVal = Math.max(...personas.map(k => animatedScores[k] || 0), 1);
+            const width = ((animatedScores[p] || 0) / maxVal) * 100;
+
+            return (
+              <div key={p} className="grid grid-cols-[90px_1fr_60px] gap-3 items-center">
+                <div className="text-sm font-medium">{p}</div>
+                <div className="h-3 bg-black/10 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-black/70 rounded-full transition-all duration-300"
+                    style={{ width: `${width}%` }}
+                  />
+                </div>
+                <div className="text-sm text-right tabular-nums">{animatedScores[p] || 0}</div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
+  }
+
+  if (phase === "result") {
+    return (
+      <Result
+        data={resultsData[winner]}
+        winner={winner}
+        onRestart={restart}
+      />
+    );
+  }
+
+  // ================== 5) Quiz rendering ==================
+  if (index >= total) return <div className="p-6">Transitioning…</div>;
+  
   const q = questions[index];
 
   return (
