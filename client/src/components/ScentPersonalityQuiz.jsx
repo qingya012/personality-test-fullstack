@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, useRef } from "react";
 import questionsData from "../data/questions.json";
 import resultsData from "../data/results.json";
 import Progress from "./Progress";
@@ -44,11 +44,13 @@ export default function ScentPersonalityQuiz() {
   const [winner, setWinner] = useState(null);
   const [stepIdx, setStepIdx] = useState(0);
 
+  const restoringRef = useRef(false);
+
   const done = index >= total; // enter replay
 
   // ================= 2) useEffect ==================
 
-  // done -> compute final -> enter replay
+  // done -> compute final -> enter replay (further animation effect)
   useEffect(() => {
     if (!started) return;
     if (!done) return;
@@ -67,7 +69,22 @@ export default function ScentPersonalityQuiz() {
     setPhase("replay");
   }, [done, started, phase, answers, personas]);
 
-  // replay animation
+  // push state to history
+  useEffect(() => {
+    const onPopState = (e) => {
+      const state = e.state;
+      if (!state) return;
+
+      // restore state
+      if (state.phase) setPhase(state.phase);
+      if (typeof state.index === "number") setIndex(state.index);
+    };
+
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
+  // replay animation (further effect)
   useEffect(() => {
     if (phase !== "replay") return;
 
@@ -87,7 +104,49 @@ export default function ScentPersonalityQuiz() {
 
     return () => clearInterval(id);
   }, [phase, answers, personas]);
-  
+
+  // first load: push initial state
+  useEffect(() => {
+    window.history.replaceState(
+      { started: false, phase: "quiz", index: 0 },
+      "",
+      ""
+    );
+  }, []);
+
+  // change state: push to history
+  useEffect(() => {
+    if (restoringRef.current) return;
+
+    window.history.pushState(
+      { started, phase, index },
+      "",
+      ""
+    );
+  }, [started, phase, index]);
+
+  // restore from history
+  useEffect(() => {
+    const onPopState = (e) => {
+      const s = e.state;
+      if (!s) return;
+
+      restoringRef.current = true;
+
+      setStarted(!!s.started);
+      setPhase(s.phase ?? "quiz");
+      setIndex(typeof s.index === "number" ? s.index : 0);
+
+      // allow next tick
+      queueMicrotask(() => {
+        restoringRef.current = false;
+      });
+    };
+
+    window.addEventListener("popstate", onPopState);
+    return () => window.removeEventListener("popstate", onPopState);
+  }, []);
+
   /* 
    * useEffect(() => {
    *   if (phase !== "result") return;
@@ -128,7 +187,15 @@ export default function ScentPersonalityQuiz() {
   // ================= 4) render ==================
 
   if (!started) {
-    return <Cover onStart={() => setStarted(true)} />;
+    return (
+      <Cover 
+        onStart={() => {
+          setStarted(true);
+          setPhase("quiz");
+          setIndex(0);
+        }}
+      />
+    );
   }
 
   if (total === 0) {
@@ -143,6 +210,7 @@ export default function ScentPersonalityQuiz() {
 
   // if (done) return <Result result={result} winner={winner} onRestart={restart} />;
 
+  // need further animation effect
   if (phase === "replay") {
     return (
       <div className="max-w-3xl mx-auto p-6">
@@ -174,10 +242,10 @@ export default function ScentPersonalityQuiz() {
     );
   }
 
-  if (phase === "result") {
+  if (phase === "result") { 
     return (
       <Result
-        data={resultsData[winner]}
+        result={resultsData[winner]}
         winner={winner}
         onRestart={restart}
       />
