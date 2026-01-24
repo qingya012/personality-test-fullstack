@@ -8,6 +8,7 @@ import GradientBackground from "./GradientBackground";
 import AnimatedBlobs from "./AnimatedBlobs";
 import { submitQuiz } from "../api/quiz";
 import { EMPTY, sumScores,resolveWinner } from "../lib/scoring";
+import UserInfo from "./UserInfo";
 
 const personas = ["fruity", "floral", "woody", "oriental"];
 const tieBreak = ["oriental", "woody", "floral", "fruity"]; // 平分时优先级（可改）
@@ -33,9 +34,13 @@ export default function ScentPersonalityQuiz() {
   const questions = questionsData.questions ?? [];
   const total = questions.length;
 
-  const [phase, setPhase] = useState("quiz"); // "quiz" | "replay" | "result"
+  const [phase, setPhase] = useState("cover"); // "cover" | "userInfo" | "quiz" | "replay" | "result"
   const [answers, setAnswers] = useState([]);// answers: store weights of selected options
-  
+  const [userName, setUserName] = useState(() => localStorage.getItem("spq_username") || "");
+
+  const cleanedName = useMemo(() => userName.trim(), [userName]);
+  const displayName = cleanedName || "Friend";
+
   // const [loading, setLoading] = useState(false);
   // const [error, setError] = useState(null);
 
@@ -108,7 +113,7 @@ export default function ScentPersonalityQuiz() {
   // first load: push initial state
   useEffect(() => {
     window.history.replaceState(
-      { started: false, phase: "quiz", index: 0 },
+      { started: false, phase: "cover", index: 0 },
       "",
       ""
     );
@@ -180,7 +185,8 @@ export default function ScentPersonalityQuiz() {
     setFinalScores(EMPTY);
     setWinner(null);
     setStepIdx(0);
-    setPhase("quiz");
+    setStarted(false);
+    setPhase("cover");
   };
 
 
@@ -191,7 +197,7 @@ export default function ScentPersonalityQuiz() {
       <Cover 
         onStart={() => {
           setStarted(true);
-          setPhase("quiz");
+          setPhase("userInfo");
           setIndex(0);
         }}
       />
@@ -207,6 +213,25 @@ export default function ScentPersonalityQuiz() {
       </div>
     );
   }
+
+  if (phase === "userInfo") {
+    return (
+      <UserInfo
+        userName={userName}
+        setUserName={setUserName}
+        onBack={() => {
+          // return to cover
+          setStarted(false);
+          setPhase("cover");
+        }}
+        onContinue={() => {
+          localStorage.setItem("spq_username", cleanedName);
+          setPhase("quiz");
+        }}
+      />
+    );
+  }
+
 
   // if (done) return <Result result={result} winner={winner} onRestart={restart} />;
 
@@ -248,6 +273,7 @@ export default function ScentPersonalityQuiz() {
         result={resultsData[winner]}
         winner={winner}
         onRestart={restart}
+        displayName={displayName}
       />
     );
   }

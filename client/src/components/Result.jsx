@@ -47,7 +47,7 @@ function QuadrantMark({ winner, theme }) {
   );
 }
 
-export default function Result({ result, winner, onRestart }) {
+export default function Result({ result, winner, onRestart, displayName }) {
   const theme = THEME[winner] ?? THEME.fruity;
   const [fade, setFade] = useState(1);
 
@@ -147,7 +147,7 @@ export default function Result({ result, winner, onRestart }) {
               lineHeight: 1.1,
             }}
           >
-            {result?.name ?? "Your Scent Persona"}
+            {displayName}, your persona is {result?.name ?? "Your Scent Persona"}
           </h1>
 
           <p style={{ marginTop: 12, fontSize: 16, color: "#333", lineHeight: 1.6, maxWidth: 560 }}>
