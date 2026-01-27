@@ -1,47 +1,135 @@
+import GradientBackground from "./GradientBackground";
+import AnimatedBlobs from "./AnimatedBlobs";
+
 export default function UserInfo({ userName, setUserName, onBack, onContinue }) {
   const cleaned = userName.trim();
   const tooLong = cleaned.length > 24;
 
   return (
-    <div className="min-h-[70vh] flex items-center justify-center p-6">
-      <div className="w-[min(720px,92vw)] rounded-3xl border bg-white/70 p-10 shadow-sm">
-        <div className="text-sm tracking-[0.35em] text-neutral-600">BEFORE WE START</div>
-        <h1 className="mt-4 text-3xl font-black">What’s your name?</h1>
-        <p className="mt-2 text-neutral-600">(Optional)</p>
+    <div style={{ position: "relative", minHeight: "100vh", width: "100vw" }}>
+      {/* Background */}
+      <GradientBackground />
+      <AnimatedBlobs />
 
-        <input
-          className={`mt-6 w-full rounded-2xl border px-4 py-3 text-lg outline-none ${
-            tooLong ? "border-red-400" : "border-neutral-200"
-          }`}
-          placeholder="Your name"
-          value={userName}
-          onChange={(e) => setUserName(e.target.value)}
-          maxLength={60}
-        />
-
-        <div className="mt-2 flex justify-between text-sm">
-          <span className={tooLong ? "text-red-500" : "text-neutral-500"}>
-            {tooLong ? "Keep it under 24 characters." : " "}
-          </span>
-          <span className="text-neutral-400">{cleaned.length}/24</span>
-        </div>
-
-        <div className="mt-8 flex gap-3">
-          <button
-            className="flex-1 rounded-2xl border border-neutral-200 py-3 font-semibold"
-            onClick={onBack}
+      {/* Center container */}
+      <div
+        style={{
+          position: "relative",
+          zIndex: 1,
+          minHeight: "100vh",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "0 24px",
+          textAlign: "center",
+        }}
+      >
+        {/* Glass card */}
+        <div
+          style={{
+            width: "100%",
+            maxWidth: 640,
+            padding: "36px 24px 32px",
+            borderRadius: 24,
+            background: "rgba(255,255,255,0.60)",
+            backdropFilter: "blur(8px)",
+            border: "1px solid rgba(255,255,255,0.70)",
+          }}
+        >
+          {/* Text */}
+          <div
+            style={{
+              letterSpacing: "0.26em",
+              fontSize: 13,
+              color: "#444",
+              marginBottom: 16,
+            }}
           >
-            Back
-          </button>
-          <button
-            className={`flex-1 rounded-2xl py-3 font-semibold text-white ${
-              tooLong ? "bg-neutral-300 cursor-not-allowed" : "bg-neutral-700"
-            }`}
-            disabled={tooLong}
-            onClick={onContinue}
+            BEFORE WE START
+          </div>
+
+          <h1
+            style={{
+              fontSize: 36,
+              fontWeight: 600,
+              color: "#111",
+              lineHeight: 1.2,
+              marginBottom: 20,
+            }}
           >
-            Continue
-          </button>
+            What&apos;s your name?
+          </h1>
+
+          {/* Input + count + buttons (same width) */}
+          <div style={{ width: "100%", maxWidth: 560, margin: "14px auto 0" }}>
+            <input
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              placeholder="Your name"
+              maxLength={24}
+              style={{
+                width: "100%",
+                height: 44,
+                padding: "10px 14px",
+                fontSize: 16,
+                borderRadius: 14,
+                border: "1px solid rgba(0,0,0,0.12)",
+                background: "rgba(255,255,255,0.25)",
+                outline: "none",
+                boxSizing: "border-box",
+                display: "block",
+              }}
+            />
+
+            {/* count row */}
+            <div
+              style={{
+                marginTop: 10,
+                fontSize: 12,
+                color: "#777",
+                textAlign: "right",
+              }}
+            >
+              {cleaned.length}/24
+            </div>
+
+            {/* buttons */}
+            <div style={{ display: "flex", gap: 12, marginTop: 22 }}>
+              <button
+                onClick={onBack}
+                style={{
+                  flex: 1,
+                  padding: "12px 0",
+                  borderRadius: 999,
+                  border: "1px solid rgba(0,0,0,0.18)",
+                  background: "rgba(255,255,255,0.35)",
+                  fontSize: 15,
+                  fontWeight: 500,
+                  cursor: "pointer",
+                }}
+              >
+                Back
+              </button>
+
+              <button
+                onClick={onContinue}
+                disabled={tooLong}
+                style={{
+                  flex: 1,
+                  padding: "12px 0",
+                  borderRadius: 999,
+                  border: "none",
+                  background: tooLong ? "rgba(0,0,0,0.18)" : "rgba(0,0,0,0.40)",
+                  color: "#fff",
+                  fontSize: 15,
+                  fontWeight: 600,
+                  cursor: tooLong ? "not-allowed" : "pointer",
+                }}
+              >
+                Continue
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
