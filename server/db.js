@@ -36,12 +36,29 @@ export function insertSubmission({ winner, scores }) {
   return info.lastInsertRowid;
 }
 
+const PERSONAS = ["fruity", "floral", "woody", "oriental"];
+
 export function getStats() {
   const rows = db
     .prepare(`SELECT winner, COUNT(*) as count FROM submissions GROUP BY winner`)
     .all();
 
-  const base = { fruity: 0, floral: 0, woody: 0, oriental: 0 };
-  for (const r of rows) base[r.winner] = Number(r.count) || 0;
-  return base;
+  // initialize counts
+  const counts = { fruity: 0, floral: 0, woody: 0, oriental: 0 };
+
+  for (const r of rows) {
+    if (counts[r.winner] !== undefined) {
+      counts[r.winner] = Number(r.count) || 0;
+    }
+  }
+
+  const total = Object.values(counts).reduce((a, b) => a + b, 0);
+
+  const distribution = PERSONAS.map((p) => ({
+    persona: p,
+    count: counts[p],
+    pct: total === 0 ? 0 : counts[p] / total,
+  })).sort((a, b) => b.count - a.count);
+
+  return { total, distribution };
 }

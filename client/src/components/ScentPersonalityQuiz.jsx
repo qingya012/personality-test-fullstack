@@ -23,6 +23,18 @@ const REPLAY_MS = 280;
 //   return candidates[0];
 // }
 
+function getOrCreateUid() {
+  const key = "spq_uid";
+  let uid = localStorage.getItem(key);
+  if(uid) return uid;
+
+  uid = (globalThis.crypto?.randomUUID?.() ??
+    `uid_${Date.now()}_${Math.random().toString(16).slice(2)}`);
+
+  localStorage.setItem(key, uid);
+  return uid;
+}
+
 export default function ScentPersonalityQuiz() {
 
   // ================= 1) useState / useMemo ==================
@@ -40,6 +52,8 @@ export default function ScentPersonalityQuiz() {
 
   const cleanedName = useMemo(() => userName.trim(), [userName]);
   const displayName = cleanedName || "Friend";
+
+  const uid = useMemo(() => getOrCreateUid(), []);
 
   // const [loading, setLoading] = useState(false);
   // const [error, setError] = useState(null);
@@ -152,13 +166,17 @@ export default function ScentPersonalityQuiz() {
     return () => window.removeEventListener("popstate", onPopState);
   }, []);
 
-  /* 
-   * useEffect(() => {
-   *   if (phase !== "result") return;
-   *   if (!winner) return;
-   *   submitQuiz({ winner }).catch(() => {});
-   * }, [phase, winner]);
-   */
+   // submit result when enter result phase
+   useEffect(() => {
+     if (phase !== "result") return;
+     if (!winner) return;
+
+     submitQuiz({ 
+      uid,
+      name: cleanedName || null,
+      winner,
+     }).catch(() => {});
+   }, [phase, winner, uid, cleanedName]);
 
   // ================= 3) handlers ==================
   

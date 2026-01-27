@@ -1,10 +1,12 @@
-import { EMPTY, sumScores, resolveWinner } from "../lib/scoring";
-
-export async function submitQuiz({ scores }) {
-  const res = await fetch("/api/quiz/submit", {
+export async function submitQuiz({ uid, name, scores }) {
+  const res = await fetch("http://localhost:3001/api/quiz/submit", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ scores }),
+    body: JSON.stringify({ 
+      uid, 
+      name, 
+      scores, 
+    }),
   });
 
   if (!res.ok) throw new Error("Request failed");
