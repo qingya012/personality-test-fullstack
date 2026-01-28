@@ -172,10 +172,12 @@ export default function ScentPersonalityQuiz() {
      if (!winner) return;
 
      submitQuiz({ 
-      uid,
-      name: cleanedName || null,
-      winner,
-     }).catch(() => {});
+      uid: crypto.randomUUID(),
+      name: null,
+      scores: finalScores,
+     }).catch((err) => {
+      console.error("submit failed", err);
+     });
    }, [phase, winner, uid, cleanedName]);
 
   // ================= 3) handlers ==================

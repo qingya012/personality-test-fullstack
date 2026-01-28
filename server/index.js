@@ -42,22 +42,27 @@ app.get("/api/quiz/stats", (req, res) => {
 });
 
 app.post("/api/quiz/submit", (req, res) => {
-console.log("SUBMIT payload:", req.body);
-
-  const { scores } = req.body || {};
-  if (!uid) return res.status(400).json({ error: "Missing uid" });
-  if (!scores) return res.status(400).json({ error: "Missing scores" });
+  try {
+    const { scores, uid, name } = req.body || {};
+    if (!uid) return res.status(400).json({ error: "Missing uid" });
+    if (!scores) return res.status(400).json({ error: "Missing scores" });
     
-  const winner = resolveWinner(scores);
+    const winner = resolveWinner(scores);
 
-  const safeName =
-    typeof name === "string" ? name.trim().slice(1, 24) : null;
+    const safeName =
+      typeof name === "string" ? name.trim().slice(1, 24) : null;
 
-  const id = insertSubmission({ uid, name: safeName, winner, scores });
+    const id = insertSubmission({ uid, name: safeName, winner, scores });
 
-  // resultsStore.push({ persona: winner, createdAt: Date.now() });
+    // resultsStore.push({ persona: winner, createdAt: Date.now() });
   
-  res.json({ id, winner, scores });
+   return res.json({ id, winner, scores });
+  } catch (err) {
+    console.error("SUBMIT failed:", err);
+    return res.status(500).json({ error: "Internal server error" });
+  }
+
+  
 });
 
 app.listen(3001, () => console.log("API on http://localhost:3001"));

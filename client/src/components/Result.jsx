@@ -48,9 +48,14 @@ function QuadrantMark({ winner, theme }) {
 }
 
 export default function Result({ result, winner, onRestart, displayName }) {
+
+  // ============== useState ===============
   const theme = THEME[winner] ?? THEME.fruity;
   const [fade, setFade] = useState(1);
 
+  const [stats, setStats] = useState(null);
+
+  // ============== useEffect ===============
   useEffect(() => {
     const onScroll = () => {
       const y = window.scrollY || 0;
@@ -62,6 +67,17 @@ export default function Result({ result, winner, onRestart, displayName }) {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
+  useEffect(() => {
+    fetch("http://localhost:3001/api/quiz/stats")
+      .then((r) => r.json())
+      .then(setStats)
+      .catch(() => {});
+  }, []);
+
+  // ============== render ===============
+  const me = stats?.distribution?.find((d) => d.persona === winner);
+  const pct = me ? Math.round(me.pct * 100) : null;
 
   return (
     <div
@@ -149,6 +165,12 @@ export default function Result({ result, winner, onRestart, displayName }) {
           >
             {displayName}, your persona is {result?.name ?? "Your Scent Persona"}
           </h1>
+
+          {pct !== null && (
+            <div style={{ marginTop: 10, fontSize: 14, color: "#555" }}>
+              {pct}% of people got the same persona as you.
+            </div>
+          )}
 
           <p style={{ marginTop: 12, fontSize: 16, color: "#333", lineHeight: 1.6, maxWidth: 560 }}>
             {result?.summary ?? "A scent profile that matches your vibe."}
