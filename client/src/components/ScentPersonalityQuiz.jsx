@@ -64,6 +64,7 @@ export default function ScentPersonalityQuiz() {
   const [stepIdx, setStepIdx] = useState(0);
 
   const restoringRef = useRef(false);
+  const submittedRef = useRef(false);
 
   const done = index >= total; // enter replay
 
@@ -170,10 +171,12 @@ export default function ScentPersonalityQuiz() {
    useEffect(() => {
      if (phase !== "result") return;
      if (!winner) return;
+     if (submittedRef.current) return;
+     submittedRef.current = true;
 
      submitQuiz({ 
       uid: crypto.randomUUID(),
-      name: null,
+      name: cleanedName || null,
       scores: finalScores,
      }).catch((err) => {
       console.error("submit failed", err);
@@ -198,6 +201,7 @@ export default function ScentPersonalityQuiz() {
   };
 
   const restart = () => {
+    submittedRef.current = false;
     setIndex(0);
     setPicked(null);
     setAnswers([]);
