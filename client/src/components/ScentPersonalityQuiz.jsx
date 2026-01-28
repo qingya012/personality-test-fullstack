@@ -84,9 +84,9 @@ export default function ScentPersonalityQuiz() {
     setWinner(resolveWinner(s)); // winner = final result
 
     // enter replay
-    setAnimatedScores(EMPTY);
-    setStepIdx(0);
-    setPhase("replay");
+    // setAnimatedScores(EMPTY);
+    // setStepIdx(0);
+    setPhase("result"); // skip replay for now
   }, [done, started, phase, answers, personas]);
 
   // push state to history
@@ -260,36 +260,37 @@ export default function ScentPersonalityQuiz() {
   // if (done) return <Result result={result} winner={winner} onRestart={restart} />;
 
   // need further animation effect
-  if (phase === "replay") {
-    return (
-      <div className="max-w-3xl mx-auto p-6">
-        <h1 className="text-2xl font-semibold">Your Persona</h1>
-        <div className="mt-2 text-sm opacity-70">
-          Calculating… ({Math.min(stepIdx, answers.length)}/{answers.length})
-        </div>
-
-        <div className="mt-6 rounded-2xl border p-5 shadow-sm space-y-3">
-          {personas.map((p) => {
-            const maxVal = Math.max(...personas.map(k => animatedScores[k] || 0), 1);
-            const width = ((animatedScores[p] || 0) / maxVal) * 100;
-
-            return (
-              <div key={p} className="grid grid-cols-[90px_1fr_60px] gap-3 items-center">
-                <div className="text-sm font-medium">{p}</div>
-                <div className="h-3 bg-black/10 rounded-full overflow-hidden">
-                  <div
-                    className="h-full bg-black/70 rounded-full transition-all duration-300"
-                    style={{ width: `${width}%` }}
-                  />
-                </div>
-                <div className="text-sm text-right tabular-nums">{animatedScores[p] || 0}</div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
-    );
-  }
+  /* if (phase === "replay") {
+   *  return (
+   *   <div className="max-w-3xl mx-auto p-6">
+   *     <h1 className="text-2xl font-semibold">Your Persona</h1>
+   *     <div className="mt-2 text-sm opacity-70">
+   *       Calculating… ({Math.min(stepIdx, answers.length)}/{answers.length})
+   *     </div>
+   *
+   *     <div className="mt-6 rounded-2xl border p-5 shadow-sm space-y-3">
+   *       {personas.map((p) => {
+   *         const maxVal = Math.max(...personas.map(k => animatedScores[k] || 0), 1);
+   *         const width = ((animatedScores[p] || 0) / maxVal) * 100;
+   *
+   *         return (
+   *           <div key={p} className="grid grid-cols-[90px_1fr_60px] gap-3 items-center">
+   *             <div className="text-sm font-medium">{p}</div>
+   *             <div className="h-3 bg-black/10 rounded-full overflow-hidden">
+   *               <div
+   *                 className="h-full bg-black/70 rounded-full transition-all duration-300"
+   *                 style={{ width: `${width}%` }}
+   *               />
+   *             </div>
+   *             <div className="text-sm text-right tabular-nums">{animatedScores[p] || 0}</div>
+   *           </div>
+   *         );
+   *       })}
+   *     </div>
+   *   </div>
+   *  );
+   * }
+   */
 
   if (phase === "result") { 
     return (
