@@ -9,6 +9,7 @@ import AnimatedBlobs from "./AnimatedBlobs";
 import { submitQuiz } from "../api/quiz";
 import { EMPTY, sumScores,resolveWinner } from "../lib/scoring";
 import UserInfo from "./UserInfo";
+import AnalyzingTransition from "./AnalyzingTransition";
 
 const personas = ["fruity", "floral", "woody", "oriental"];
 const tieBreak = ["oriental", "woody", "floral", "fruity"]; // 平分时优先级（可改）
@@ -46,7 +47,7 @@ export default function ScentPersonalityQuiz() {
   const questions = questionsData.questions ?? [];
   const total = questions.length;
 
-  const [phase, setPhase] = useState("cover"); // "cover" | "userInfo" | "quiz" | "replay" | "result"
+  const [phase, setPhase] = useState("cover"); // "cover" | "userInfo" | "quiz" | "analyzing" | "result"
   const [answers, setAnswers] = useState([]);// answers: store weights of selected options
   const [userName, setUserName] = useState(() => localStorage.getItem("spq_username") || "");
 
@@ -86,7 +87,7 @@ export default function ScentPersonalityQuiz() {
     // enter replay
     // setAnimatedScores(EMPTY);
     // setStepIdx(0);
-    setPhase("result"); // skip replay for now
+    setPhase("analyzing"); // skip replay for now
   }, [done, started, phase, answers, personas]);
 
   // push state to history
@@ -260,7 +261,7 @@ export default function ScentPersonalityQuiz() {
   // if (done) return <Result result={result} winner={winner} onRestart={restart} />;
 
   // need further animation effect
-  /* if (phase === "replay") {
+  /*  if (phase === "replay") {
    *  return (
    *   <div className="max-w-3xl mx-auto p-6">
    *     <h1 className="text-2xl font-semibold">Your Persona</h1>
@@ -292,6 +293,16 @@ export default function ScentPersonalityQuiz() {
    * }
    */
 
+  if (phase === "analyzing") {
+    return (
+      <AnalyzingTransition
+        winner={winner}
+        finalScores={finalScores}
+        onDone={() => setPhase("result")}
+      />
+    );
+  }
+  
   if (phase === "result") { 
     return (
       <Result
