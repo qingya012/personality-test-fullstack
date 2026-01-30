@@ -149,7 +149,7 @@ export default function Result({ result, winner, onRestart, displayName }) {
               YOUR PERSONA · {theme.label.toUpperCase()}
             </div>
 
-            <div style={{ marginLeft: "auto" }}>
+            <div id="spq-result-quadrant-anchor" style={{ marginLeft: "auto" }}>
               <QuadrantMark winner={winner} theme={theme} />
             </div>
           </div>
