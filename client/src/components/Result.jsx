@@ -55,6 +55,8 @@ export default function Result({ result, winner, onRestart, displayName }) {
 
   const [stats, setStats] = useState(null);
 
+  const [enter, setEnter] = useState(false);
+
   // ============== useEffect ===============
   useEffect(() => {
     const onScroll = () => {
@@ -75,6 +77,21 @@ export default function Result({ result, winner, onRestart, displayName }) {
       .catch(() => {});
   }, []);
 
+  useEffect(() => {
+    let from = false;
+    try {
+      from = sessionStorage.getItem("spq_from_transition") === "1";
+      if (from) sessionStorage.removeItem("spq_from_transition");
+    } catch {}
+
+    if (from) {
+      setEnter(true);
+      // on next frame, turn off
+      requestAnimationFrame(() => setEnter(false));
+    }
+  }, []);
+
+
   // ============== render ===============
   const me = stats?.distribution?.find((d) => d.persona === winner);
   const pct = me ? Math.round(me.pct * 100) : null;
@@ -85,18 +102,19 @@ export default function Result({ result, winner, onRestart, displayName }) {
         minHeight: "100vh",
         width: "100vw",
         backgroundImage: theme.resultBase,
-        backgroundColor: "#fff",
+        backgroundColor: enter ? "#000" : "#fff",
+        transition: "background-image 520ms ease",
         position: "relative",
       }}
     >
-      {/* 顶部高光层：滚动淡出 */}
+      {/* highlight */}
       <div
         style={{
           position: "fixed",
-          inset: 0, // ✅ 这里必须是 inset
+          inset: 0,
           pointerEvents: "none",
-          opacity: fade,
-          transition: "opacity 60ms linear",
+          opacity: enter ? 0 : fade,
+          transition: "opacity 520ms ease",
           backgroundImage: theme.resultHighlight,
           zIndex: 0,
         }}
@@ -114,7 +132,7 @@ export default function Result({ result, winner, onRestart, displayName }) {
           padding: "0 24px",
         }}
       >
-        {/* 卡片容器 */}
+        {/* card container */}
         <div
           style={{
             width: "100%",
@@ -130,6 +148,9 @@ export default function Result({ result, winner, onRestart, displayName }) {
             `,
             position: "relative",
             paddingBottom: 72,
+            transform: enter ? "scale(0.985) translateY(6px)" : "scale(1) translateY(0px)",
+            opacity: enter ? 0 : 1,
+            transition: "transform 520ms cubic-bezier(0.2, .9, 0.2, 1), opacity 520ms ease",
           }}
         >
           {/* header（紧凑版，不拉裂） */}
@@ -149,7 +170,16 @@ export default function Result({ result, winner, onRestart, displayName }) {
               YOUR PERSONA · {theme.label.toUpperCase()}
             </div>
 
-            <div id="spq-result-quadrant-anchor" style={{ marginLeft: "auto" }}>
+            <div
+              id="spq-result-quadrant-anchor"
+              style={{
+                marginLeft: "auto",
+                transform: enter ? "scale(0.96)" : "scale(1)",
+                opacity: enter ? 0 : 1,
+                transition: "transform 420ms cubic-bezier(.2,.9,.2,1), opacity 420ms ease",
+              }}
+            >
+
               <QuadrantMark winner={winner} theme={theme} />
             </div>
           </div>

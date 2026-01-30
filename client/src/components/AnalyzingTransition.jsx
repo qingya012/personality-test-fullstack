@@ -6,6 +6,8 @@ import LogoMark from "../assets/LogoMark.jsx";
 import { THEME } from "../data/theme";
 
 export default function AnalyzingTransition({ winner, onDone }) {
+  // ============== useState ===============
+
   // stages: text -> gather -> orb -> bloom -> done
   const [stage, setStage] = useState("text");
   const [dark, setDark] = useState(0);   // 0..1 black overlay
@@ -15,30 +17,74 @@ export default function AnalyzingTransition({ winner, onDone }) {
   const [flyTx, setFlyTx] = useState(0);
   const [flyTy, setFlyTy] = useState(0);
 
+  const [textExit, setTextExit] = useState(false);
+  const [showText, setShowText] = useState(false);
+
+  const [gatherVisible, setGatherVisible] = useState(false);
+
+  const [gTx, setGTx] = useState(0);
+  const [gTy, setGTy] = useState(0);
+  const [gOn, setGOn] = useState(false);
+
   const theme = useMemo(() => THEME[winner] ?? THEME.fruity, [winner]);
 
   const bottleRef = useRef(null);
 
+  // ============== useEffect ===============
   useEffect(() => {
-    // 时间轴（先跑通完整骨架）
-    const t0 = setTimeout(() => setStage("gather"), 800);
+    const tShow = setTimeout(() => setShowText(true), 380);
 
-    // gather 开始后逐渐变黑（你说中段黑色更好）
-    const t1 = setTimeout(() => setDark(0.85), 1100);
+    // 文字完整显示 1.1s
+    const tTextHold = setTimeout(() => {
+        setTextExit(true); // 开始放大 + 淡出
+    }, 1100);
 
-    // 光球出现 + 轻微震动（先做出来）
+    const tPrepareGather = setTimeout(() => {
+        setGatherVisible(true);
+    }, 1800);
+    
+    // 再过 500ms，才真正进入 gather
+    const tGather = setTimeout(() => {
+        setStage("gather");
+        
+        const bottle = bottleRef.current;
+        if (bottle) {
+          const b = bottle.getBoundingClientRect();
+          const bottleCx = b.left + b.width / 2;
+          const bottleCy = b.top + b.height / 2;
+
+          const screenCx = window.innerWidth / 2;
+          const screenCy = window.innerHeight / 2;
+
+          setGTx(bottleCx - screenCx);
+          setGTy(bottleCy - screenCy);
+          setGOn(true);
+        } else {
+          setGOn(true);
+        }
+    }, 1900);
+
+
+    // start darkening
+    // gather 开始后：先轻微黑，再逐渐加深到接近全黑
+    const tDarkStart = setTimeout(() => setDark(0.3), 2400);
+    const tDarkDeep = setTimeout(() => setDark(0.95), 3200);
+    // const t1c = setTimeout(() => setDark(0.75), 3900);
+    // const t1d = setTimeout(() => setDark(0.92), 4700);
+
+    // light orb appears + slight scale up
     const t2 = setTimeout(() => {
       setStage("orb");
       setOrb(1);
-    }, 1450);
+    }, 3700);
 
-    // 绽放成结果色块
+    // bloom into result color panel
     const t3 = setTimeout(() => {
       setStage("bloom");
       setBloom(1);
-    }, 2000);
+    }, 4200);
 
-    // 结束：跳 result（后面 Part5 会把“飞去右上角”放在这段之前）
+    // end: jump to result (later Part5 will put "fly to top right" before this)
     const t4 = setTimeout(() => {
       setStage("fly");
 
@@ -65,14 +111,16 @@ export default function AnalyzingTransition({ winner, onDone }) {
       setFlyTx(targetCx - bottleCx);
       setFlyTy(targetCy - bottleCy);
       setFly(true);
-    }, 2450);
+    }, 5200);
 
     // after flying, go to result
     const t5 = setTimeout(() => {
-        onDone?.();
-    }, 3050);
+        try {
+            sessionStorage.setItem("spq-justCompleted", "1");
+        } catch {}
+    }, 6300);
 
-    return () => [t0, t1, t2, t3, t4, t5].forEach(clearTimeout);
+    return () => [tTextHold, tGather, tShow, tPrepareGather, tDarkStart, tDarkDeep, t2, t3, t4, t5].forEach(clearTimeout);
   }, [onDone]);
 
     const bottleTransform = 
@@ -87,13 +135,22 @@ export default function AnalyzingTransition({ winner, onDone }) {
     const bottleTransition = 
         fly ? "transform 520ms cubic-bezier(.2,.9,.2,1)" : "transform 280ms ease";
 
+  // ============== render ===============
   return (
     <div style={{ position: "relative", minHeight: "100vh", width: "100vw", overflow: "hidden" }}>
       <GradientBackground />
       <AnimatedBlobs />
 
       {/* 收拢层 + 黑场（不改你原本背景） */}
-      <GatherLayer active={stage !== "text"} darkness={dark} />
+      {gatherVisible && (
+        <GatherLayer 
+          active={gOn} 
+          darkness={dark}
+          tx={gTx}
+          ty={gTy}
+          theme={theme} 
+        />
+      )}
 
       {/* 内容层 */}
       <div
@@ -111,12 +168,18 @@ export default function AnalyzingTransition({ winner, onDone }) {
           style={{
             position: "absolute",
             top: "38%",
-            transform: "translateY(-50%)",
-            opacity: stage === "text" ? 1 : 0,
-            transition: "opacity 220ms ease",
-            letterSpacing: "0.18em",
-            fontSize: 14,
-            color: "rgba(240,240,240,0.88)", // 黑场上更清楚
+            transform: 
+              !textExit
+                ? "translateY(-50%) scale(1)"
+                : "translateY(-50%) scale(1.14)",
+            opacity: showText && !textExit ? 1 : 0,
+            transition: "transform 900ms cubic-bezier(.22,1,.36,1), opacity 700ms ease",
+            fontSize: 22,
+            fontWeight: 500,
+            letterSpacing: "0.26em",
+            lineHeight: 1.2,
+            color: "rgba(20,20,20,0.82)",
+            textShadow: "0 10px 30px rgba(255,255,255,0.70)",
             textAlign: "center",
             pointerEvents: "none",
           }}
@@ -131,9 +194,11 @@ export default function AnalyzingTransition({ winner, onDone }) {
             position: "relative",
             width: 160,
             height: 160,
+            opacity: stage === "text" ? 0 : 1,
             transform: bottleTransform,
-            transition: bottleTransition,
+            transition: `opacity 260ms ease, ${bottleTransition}`,
             willChange: "transform",
+            pointerEvents: "none",
           }}
         >
           <LogoMark size={160} />
