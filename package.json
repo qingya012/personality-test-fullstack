@@ -3,5 +3,8 @@
   "private": true,
   "scripts": {
     "dev": "npm --prefix server run dev & npm --prefix client run dev"
+  },
+  "dependencies": {
+    "animejs": "^4.3.5"
   }
 }
