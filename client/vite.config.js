@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from "@tailwindcss/vite";
 
 export default defineConfig({
-  base: '/scent-personality-quiz/',
+  base: '/personality-test-fullstack/',
   plugins: [react(), tailwindcss()],
   build: {
     rollupOptions: {
