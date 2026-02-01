@@ -187,13 +187,15 @@ export default function Result({ result, winner, onRestart, displayName }) {
           <h1
             style={{
               marginTop: 14,
-              fontSize: 40,
-              fontWeight: 650,
+              fontSize: 44,
+              fontWeight: 600,
               color: "#111",
-              lineHeight: 1.1,
+              lineHeight: 1.15,
+              fontFamily: '"Playfair Display", serif',
+              letterSpacing: "-0.01em",
             }}
           >
-            {displayName}, your persona is {result?.name ?? "Your Scent Persona"}
+            {displayName}, your persona is <span style={{ fontStyle: "italic" }}>{result?.name ?? "Your Scent Persona"}</span>
           </h1>
 
           {pct !== null && (

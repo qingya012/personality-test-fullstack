@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+body {
+  margin: 0;
+  font-family: 'Lato', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
 @keyframes blobMove {
   0%   { transform: translate(0px, 0px) scale(1); }
   25%  { transform: translate(40px, -30px) scale(1.07); }
@@ -13,7 +20,7 @@
 /* ===== SPQ button system ===== */
 .spq-glass {
   background: rgba(255, 255, 255, 0.75);
-  border: 1px solid rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(5, 2, 2, 0.12);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease,

@@ -13,7 +13,7 @@ export default function PerfumeIcon({
   const woody = "#7FB28A";
   const oriental = "#D9824A";
 
-  // === 几何参数 ===
+  // === 几何参数 (严格保持你提供的代码) ===
   const capW = s * 0.20;
   const capH = s * 0.12;
   const neckW = s * 0.34;
@@ -25,16 +25,14 @@ export default function PerfumeIcon({
   const bodyH = s * 0.66;
   const bodyR = s * 0.22;
 
-  // === 你的黄金参数 ===
+  // === 你的参数 ===
   const innerPad = bodyW * 0.24; 
   const gridX = bodyX + innerPad;
-  const gridY = bodyY + innerPad * 0.83; // 保持 0.83
+  const gridY = bodyY + innerPad * 0.83; 
   const gridW = bodyW - innerPad * 2;
-
   const gap = gridW * 0.10;
   const cell = (gridW - gap) / 2;
   const cellR = cell * 0.25; 
-
   const centerX = gridX + gridW / 2;
   const centerY = gridY + gridW / 2;
 
@@ -45,6 +43,7 @@ export default function PerfumeIcon({
       viewBox={`0 0 ${s} ${s}`}
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      style={{ overflow: "visible" }}
     >
       <defs>
         <clipPath id={clipId}>
@@ -56,12 +55,12 @@ export default function PerfumeIcon({
         </linearGradient>
       </defs>
 
-      {/* 1. 瓶身 */}
+      {/* 瓶身结构 */}
       <rect x={(s - capW) / 2} y={s * 0.08} width={capW} height={capH} rx={s * 0.04} fill="rgba(255,255,255,0.75)" />
       <rect x={(s - neckW) / 2} y={s * 0.18} width={neckW} height={neckH} rx={s * 0.06} fill="rgba(255,255,255,0.70)" />
       <rect x={bodyX} y={bodyY} width={bodyW} height={bodyH} rx={bodyR} fill="rgba(255,255,255,0.55)" stroke="rgba(0,0,0,0.10)" />
 
-      {/* 2. 动态区 */}
+      {/* 核心区 */}
       <g clipPath={`url(#${clipId})`}>
         <g
           style={{
@@ -72,7 +71,7 @@ export default function PerfumeIcon({
               : "transform 0.5s ease-out",
           }}
         >
-          {/* 小方块 */}
+          {/* 四小格 (无结果时显示) */}
           <g style={{ opacity: mergedColor ? 0 : 1, transition: "opacity 300ms" }}>
             <rect x={gridX} y={gridY} width={cell} height={cell} rx={cellR} fill={floral} opacity="0.9" />
             <rect x={gridX + cell + gap} y={gridY} width={cell} height={cell} rx={cellR} fill={fruity} opacity="0.9" />
@@ -80,23 +79,24 @@ export default function PerfumeIcon({
             <rect x={gridX + cell + gap} y={gridY + cell + gap} width={cell} height={cell} rx={cellR} fill={oriental} opacity="0.9" />
           </g>
 
-          {/* 大方块 (纯色) */}
+          {/* 大色块 (有结果时显示) */}
           <g style={{ opacity: mergedColor ? 1 : 0, transition: "opacity 300ms" }}>
+             {/* 既然改用纯色，就不需要 foreignObject 了，用 rect 更稳定 */}
              <rect 
                x={gridX} 
                y={gridY} 
                width={gridW} 
                height={gridW} 
                rx={cellR}
-               // 这里接收纯色，比如 #E9A3B1
-               fill={mergedColor || "#000"} 
-               filter="drop-shadow(0 0 10px rgba(0,0,0,0.1))"
+               fill={mergedColor || "transparent"} 
+               // 加一点点内阴影增加质感
+               filter="drop-shadow(0 0 5px rgba(0,0,0,0.05))"
              />
           </g>
         </g>
       </g>
       
-      {/* 3. 高光 */}
+      {/* 高光 */}
       <rect 
         x={bodyX} y={bodyY} width={bodyW} height={bodyH} rx={bodyR} 
         fill="url(#glass_shine)" 
