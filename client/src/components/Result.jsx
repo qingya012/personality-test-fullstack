@@ -56,7 +56,15 @@ export default function Result({ result, winner, onRestart, displayName }) {
 
   const [stats, setStats] = useState(null);
 
-  const [enter, setEnter] = useState(false);
+  const [appear, setAppear] = useState(false);
+
+  const [enter, setEnter] = useState(() => {
+    try {
+      return sessionStorage.getItem("spq_from_transition") === "1";
+    } catch {
+      return false;
+    }
+  });
 
   // ============== useEffect ===============
   useEffect(() => {
@@ -79,19 +87,15 @@ export default function Result({ result, winner, onRestart, displayName }) {
   }, []);
 
   useEffect(() => {
-    let from = false;
-    try {
-      from = sessionStorage.getItem("spq_from_transition") === "1";
-      if (from) sessionStorage.removeItem("spq_from_transition");
-    } catch {}
+    if (!enter) return;
+    try { sessionStorage.removeItem("spq_from_transition"); } catch {}
+    requestAnimationFrame(() => setEnter(false));
+  }, [enter]);
 
-    if (from) {
-      setEnter(true);
-      // on next frame, turn off
-      requestAnimationFrame(() => setEnter(false));
-    }
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setAppear(true));
+    return () => cancelAnimationFrame(id);
   }, []);
-
 
   // ============== render ===============
   const me = stats?.distribution?.find((d) => d.persona === winner);
@@ -104,10 +108,26 @@ export default function Result({ result, winner, onRestart, displayName }) {
         width: "100vw",
         backgroundImage: theme.resultBase,
         backgroundColor: enter ? "#000" : "#fff",
-        transition: "background-image 520ms ease",
+        transition: "background-image 520ms ease, background-color 520ms ease",
         position: "relative",
       }}
     >
+      
+      <style>{`
+          @keyframes spqCardIn {
+            from {
+              opacity: 0;
+              transfrom: scale(0.985) translateY(10px);
+              filter: blur(2px);
+            }
+            to {
+              opacity: 1;
+              transform: scale(1) translateY(0px);
+              filter: blur(0px);
+            }
+          }
+      `}</style>  
+
       {/* highlight */}
       <div
         style={{
@@ -151,7 +171,10 @@ export default function Result({ result, winner, onRestart, displayName }) {
             paddingBottom: 72,
             transform: enter ? "scale(0.985) translateY(6px)" : "scale(1) translateY(0px)",
             opacity: enter ? 0 : 1,
+            clipPath: appear ? "inset(1% round 24px)" : "inset(4% round 24px)",
             transition: "transform 520ms cubic-bezier(0.2, .9, 0.2, 1), opacity 520ms ease",
+            willChange: "transform, opacity",
+            animation: "spqCardIn 520ms cubic-bezier(0.2,.9,0.2,1) both",
           }}
         >
           {/* header */}
@@ -159,8 +182,10 @@ export default function Result({ result, winner, onRestart, displayName }) {
             position: "absolute",
             top: 32,
             right: 32,
-            transform: enter ? 0: 1,
+            transform: enter ? "scale(0.985) translateY(6px)" : "scale(1) translateY(0px)",
+            opacity: enter ? 0 : 1,
             transition: "transform 420ms cubic-bezier(0.2, .9, 0.2, 1), opacity 420ms ease",
+            willChange: "transform, opacity",
           }}>
 
             {/* perfume icon */}

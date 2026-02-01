@@ -54,25 +54,25 @@ function blob(type) {
       top: -240,
       left: -220,
       background: "rgba(233,163,177,1)",
-      animation: "spqBlobMoveA 18s ease-in-out infinite",
+      animation: "spqBlobMoveA 10s ease-in-out infinite",
     },
     fruity: {
       top: -240,
       right: -220,
       background: "rgba(244,211,122,1)",
-      animation: "spqBlobMoveB 20s ease-in-out infinite",
+      animation: "spqBlobMoveB 14s ease-in-out infinite",
     },
     woody: {
       bottom: -260,
       left: -240,
       background: "rgba(127,178,138,1)",
-      animation: "spqBlobMoveB 22s ease-in-out infinite",
+      animation: "spqBlobMoveB 16s ease-in-out infinite",
     },
     oriental: {
       bottom: -280,
       right: -240,
       background: "rgba(217,130,74,1)",
-      animation: "spqBlobMoveA 24s ease-in-out infinite",
+      animation: "spqBlobMoveA 18s ease-in-out infinite",
     },
   };
 

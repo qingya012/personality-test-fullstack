@@ -1,12 +1,17 @@
 import GradientBackground from "./GradientBackground";
 import AnimatedBlobs from "./AnimatedBlobs";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function UserInfo({ userName, setUserName, onBack, onContinue }) {
   const cleaned = userName.trim();
   const tooLong = cleaned.length > 24;
   const [hoverBack, setHoverBack] = useState(false);
   const [hoverNext, setHoverNext] = useState(false);
+
+  // ========== useEffect ==============
+  useEffect(() => {
+    console.log("Request access...");
+  }, []);
 
   return (
     <div style={{ position: "relative", minHeight: "100vh", width: "100vw" }}>
@@ -94,6 +99,20 @@ export default function UserInfo({ userName, setUserName, onBack, onContinue }) 
               }}
             >
               {cleaned.length}/24
+            </div>
+
+            {/* disclaimer */}
+            <div style={{
+              marginTop: 6,
+              fontSize: 11,
+              color: "#666",
+              lineHeight: 1.4,
+              textAlign: "center",
+              maxWidth: "80%",
+              marginLeft: "auto",
+              marginRight: "auto",
+            }}>
+              To generate a unique result, we need your device permission.
             </div>
 
             {/* buttons */}

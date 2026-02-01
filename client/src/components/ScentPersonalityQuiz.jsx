@@ -347,7 +347,7 @@ export default function ScentPersonalityQuiz() {
     const q = questions[index];
 
     if (!q) {
-      view = <div className="p-6">Transitioning...</div>;
+      view = null;
     } else{ 
       view = ( // quiz rendering
         <div style={{ position: "relative", minHeight: "100vh", width: "100vw" }}>
