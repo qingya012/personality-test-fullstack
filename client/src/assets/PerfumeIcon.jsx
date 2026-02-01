@@ -56,9 +56,9 @@ export default function PerfumeIcon({
       </defs>
 
       {/* 瓶身结构 */}
-      <rect x={(s - capW) / 2} y={s * 0.08} width={capW} height={capH} rx={s * 0.04} fill="rgba(255,255,255,0.75)" />
-      <rect x={(s - neckW) / 2} y={s * 0.18} width={neckW} height={neckH} rx={s * 0.06} fill="rgba(255,255,255,0.70)" />
-      <rect x={bodyX} y={bodyY} width={bodyW} height={bodyH} rx={bodyR} fill="rgba(255,255,255,0.55)" stroke="rgba(0,0,0,0.10)" />
+      <rect x={(s - capW) / 2} y={s * 0.08} width={capW} height={capH} rx={s * 0.04} fill="rgba(255,255,255,0.75)" stroke="rgba(0,0,0,0.30)" />
+      <rect x={(s - neckW) / 2} y={s * 0.18} width={neckW} height={neckH} rx={s * 0.06} fill="rgba(255,255,255,0.70)" stroke="rgba(0,0,0,0.30)" />
+      <rect x={bodyX} y={bodyY} width={bodyW} height={bodyH} rx={bodyR} fill="rgba(255,255,255,0.55)" stroke="rgba(0,0,0,0.30)" />
 
       {/* 核心区 */}
       <g clipPath={`url(#${clipId})`}>

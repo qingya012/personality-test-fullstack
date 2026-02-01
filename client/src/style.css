@@ -59,11 +59,13 @@ body {
 
 /* 主按钮（Cover dark） */
 .spq-primary {
+  font-family: "Tenor Sans", sans-serif;
+  letter-spacing: 0.05em;
   width: 100%;
   padding: 14px 18px;
   border-radius: 16px;
   border: 1px solid rgba(0,0,0,0.12);
-  background: rgba(0, 0, 0, 0.361);
+  background: rgba(0, 0, 0, 0.561);
   color: #fff;
   font-size: 16px;
   font-weight: 650;

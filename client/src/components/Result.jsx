@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { THEME } from "../data/theme";
+import PerfumeIcon from "../assets/PerfumeIcon";
 
 function QuadrantMark({ winner, theme }) {
   // TL: floral, TR: fruity, BL: woody, BR: oriental
@@ -120,7 +121,7 @@ export default function Result({ result, winner, onRestart, displayName }) {
         }}
       />
 
-      {/* 内容层 */}
+      {/* content */}
       <div
         style={{
           position: "relative",
@@ -137,7 +138,7 @@ export default function Result({ result, winner, onRestart, displayName }) {
           style={{
             width: "100%",
             maxWidth: 720,
-            padding: "40px 24px",
+            padding: "48px 32px",
             borderRadius: 24,
             background: "rgba(255,255,255,0.62)",
             backdropFilter: "blur(10px)",
@@ -153,37 +154,20 @@ export default function Result({ result, winner, onRestart, displayName }) {
             transition: "transform 520ms cubic-bezier(0.2, .9, 0.2, 1), opacity 520ms ease",
           }}
         >
-          {/* header（紧凑版，不拉裂） */}
-          <div style={{ display: "flex", alignItems: "center", gap: 14, flexWrap: "wrap" }}>
-            <div
-              style={{
-                display: "inline-block",
-                padding: "6px 12px",
-                borderRadius: 999,
-                background: theme.soft,
-                border: `1px solid ${theme.accent}`,
-                fontSize: 12,
-                letterSpacing: "0.12em",
-                color: "#111",
-              }}
-            >
-              YOUR PERSONA · {theme.label.toUpperCase()}
-            </div>
+          {/* header */}
+          <div style={{
+            position: "absolute",
+            top: 32,
+            right: 32,
+            transform: enter ? 0: 1,
+            transition: "transform 420ms cubic-bezier(0.2, .9, 0.2, 1), opacity 420ms ease",
+          }}>
 
-            <div
-              id="spq-result-quadrant-anchor"
-              style={{
-                marginLeft: "auto",
-                transform: enter ? "scale(0.96)" : "scale(1)",
-                opacity: enter ? 0 : 1,
-                transition: "transform 420ms cubic-bezier(.2,.9,.2,1), opacity 420ms ease",
-              }}
-            >
-
-              <QuadrantMark winner={winner} theme={theme} />
-            </div>
+            {/* perfume icon */}
+            <PerfumeIcon size={140} mergedColor={theme.accent} />
           </div>
 
+          {/* title + description */}
           <h1
             style={{
               marginTop: 14,
@@ -192,25 +176,25 @@ export default function Result({ result, winner, onRestart, displayName }) {
               color: "#111",
               lineHeight: 1.15,
               fontFamily: '"Playfair Display", serif',
-              letterSpacing: "-0.01em",
+              letterSpacing: "-0.02em",
             }}
           >
             {displayName}, your persona is <span style={{ fontStyle: "italic" }}>{result?.name ?? "Your Scent Persona"}</span>
           </h1>
 
           {pct !== null && (
-            <div style={{ marginTop: 10, fontSize: 14, color: "#555" }}>
+            <div style={{ marginTop: 10, fontSize: 14, color: "#444" }}>
               {pct}% of people got the same persona as you.
             </div>
           )}
 
-          <p style={{ marginTop: 12, fontSize: 16, color: "#333", lineHeight: 1.6, maxWidth: 560 }}>
+          <p style={{ marginTop: 12, fontSize: 16, color: "#222", lineHeight: 1.6, maxWidth: 520 }}>
             {result?.summary ?? "A scent profile that matches your vibe."}
           </p>
 
           {/* notes */}
-          <div style={{ marginTop: 22, maxWidth: 560 }}>
-            <div style={{ fontSize: 12, color: "#555", letterSpacing: "0.14em" }}>
+          <div style={{ marginTop: 32, maxWidth: 560 }}>
+            <div style={{ fontSize: 12, color: "#666", letterSpacing: "0.14em" }}>
               RECOMMENDED NOTES
             </div>
             <div style={{ marginTop: 10, display: "flex", flexWrap: "wrap", gap: 10 }}>
@@ -220,10 +204,10 @@ export default function Result({ result, winner, onRestart, displayName }) {
                   style={{
                     padding: "8px 12px",
                     borderRadius: 999,
-                    background: "rgba(255,255,255,0.75)",
-                    border: "1px solid rgba(0,0,0,0.10)",
+                    background: "rgba(255,255,255,0.6)",
+                    border: "1px solid rgba(0,0,0,0.08)",
                     color: "#111",
-                    fontSize: 14,
+                    fontSize: 15,
                   }}
                 >
                   {s}

@@ -45,7 +45,7 @@ export default function LogoMark({ size = 96 }) {
         height={capH}
         rx={s * 0.04}
         fill="rgba(255,255,255,0.75)"
-        stroke="rgba(0,0,0,0.10)"
+        stroke="rgba(0,0,0,0.20)"
       />
 
       {/* 瓶颈 */}
@@ -56,7 +56,7 @@ export default function LogoMark({ size = 96 }) {
         height={neckH}
         rx={s * 0.06}
         fill="rgba(255,255,255,0.70)"
-        stroke="rgba(0,0,0,0.10)"
+        stroke="rgba(0,0,0,0.20)"
       />
 
       {/* 瓶身 */}
@@ -67,7 +67,7 @@ export default function LogoMark({ size = 96 }) {
         height={bodyH}
         rx={bodyR}
         fill="rgba(255,255,255,0.55)"
-        stroke="rgba(0,0,0,0.10)"
+        stroke="rgba(0,0,0,0.20)"
       />
 
       {/* 四宫格（保证在瓶身内） */}

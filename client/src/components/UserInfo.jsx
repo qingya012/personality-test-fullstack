@@ -1,9 +1,12 @@
 import GradientBackground from "./GradientBackground";
 import AnimatedBlobs from "./AnimatedBlobs";
+import { useState } from "react";
 
 export default function UserInfo({ userName, setUserName, onBack, onContinue }) {
   const cleaned = userName.trim();
   const tooLong = cleaned.length > 24;
+  const [hoverBack, setHoverBack] = useState(false);
+  const [hoverNext, setHoverNext] = useState(false);
 
   return (
     <div style={{ position: "relative", minHeight: "100vh", width: "100vw" }}>
@@ -95,39 +98,56 @@ export default function UserInfo({ userName, setUserName, onBack, onContinue }) 
 
             {/* buttons */}
             <div style={{ display: "flex", gap: 12, marginTop: 22 }}>
+              
+              {/* ===== 1. Back Button ===== */}
               <button
                 onClick={onBack}
-                style={{
-                  flex: 1,
-                  padding: "12px 0",
-                  borderRadius: 999,
-                  border: "1px solid rgba(0,0,0,0.18)",
-                  background: "rgba(255,255,255,0.35)",
-                  fontSize: 15,
-                  fontWeight: 500,
-                  cursor: "pointer",
-                }}
-              >
-                Back
-              </button>
 
-              <button
-                onClick={onContinue}
-                disabled={tooLong}
+                onMouseEnter={() => setHoverBack(true)}
+                onMouseLeave={() => setHoverBack(false)}
                 style={{
                   flex: 1,
                   padding: "12px 0",
                   borderRadius: 999,
-                  border: "none",
-                  background: tooLong ? "rgba(0,0,0,0.18)" : "rgba(0,0,0,0.40)",
-                  color: "#fff",
+                  border: hoverBack ? "1px solid rgba(0,0,0,0.25)" : "1px solid rgba(0,0,0,0.18)",
+                  background: hoverBack ? "rgba(255,255,255,0.55)" : "rgba(255,255,255,0.35)",
                   fontSize: 15,
-                  fontWeight: 600,
-                  cursor: tooLong ? "not-allowed" : "pointer",
-                }}
-              >
-                Continue
-              </button>
+                fontWeight: 600, 
+                color: "#333",   // Back键字体深一点才看得清
+                cursor: "pointer",
+
+                transition: "background 0.2s ease, border-color 0.2s ease, transform 0.1s ease",
+                transform: hoverBack ? "translateY(-1px)" : "none"
+              }}
+            >
+              Back
+            </button>
+
+            {/* ===== 2. Continue Button ===== */}
+            <button
+              onClick={onContinue}
+              disabled={tooLong}
+              onMouseEnter={() => setHoverNext(true)}
+              onMouseLeave={() => setHoverNext(false)}
+              style={{
+                flex: 1,
+                padding: "12px 0",
+                borderRadius: 999,
+                border: "none",
+                background: tooLong
+                  ? "rgba(0,0,0,0.18)"
+                  : (hoverNext ? "rgba(0, 0, 0, 0.65)" : "rgba(0, 0, 0, 0.47)"),
+                color: "#fff",
+                fontSize: 15,
+                fontWeight: 600,
+                cursor: tooLong ? "not-allowed" : "pointer",
+                transition: "background 0.2s ease, transform 0.1s ease",
+                transform: (!tooLong && hoverNext) ? "translateY(-1px)" : "none"
+              }}
+            >
+              Continue
+             </button>
+  
             </div>
           </div>
         </div>

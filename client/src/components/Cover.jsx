@@ -32,17 +32,41 @@ export default function Cover({ onStart }) {
           }}
         >
 
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: 18 }}>
-            <LogoMark size={92} />
+          <div style={{ 
+            display: "flex", 
+            justifyContent: "center", 
+            marginBottom: 18 
+          }}>
+            <LogoMark size={96} />
           </div>
 
-          <div style={{ letterSpacing: "0.26em", fontSize: 14, color: "#444" }}>
+          <div style={{ 
+            fontFamily: '"Tenor Sans", sans-serif',
+            letterSpacing: "0.2em", 
+            fontSize: 13, 
+            color: "#555", 
+            marginBottom: 12,
+          }}>
             WELCOME
           </div>
-          <div style={{ marginTop: 12, letterSpacing: "0.30em", fontSize: 12, color: "#666" }}>
+          <div style={{ 
+            fontFamily: '"Tenor Sans", sans-serif',
+            marginBottom: 15, 
+            letterSpacing: "0.2em", 
+            fontSize: 13, 
+            color: "#555" 
+          }}>
             TO
           </div>
-          <h1 style={{ marginTop: 16, fontSize: 40, fontWeight: 600, color: "#111", lineHeight: 1.15 }}>
+          <h1 style={{ 
+            fontFamily: '"Playfair Display", serif',
+            marginBottom: 36, 
+            fontSize: 40, 
+            fontWeight: 600, 
+            color: "#111", 
+            lineHeight: 1.15, 
+            letterSpacing: "-0.01em"
+          }}>
             Scent Personality Quiz
           </h1>
 
@@ -50,7 +74,13 @@ export default function Cover({ onStart }) {
             Start
           </button>
 
-          <div style={{ marginTop: 14, fontSize: 12, color: "#555" }}>
+          <div style={{ 
+            marginTop: 24, 
+            fontSize: 14, 
+            color: "#666", 
+            letterSpacing: "0.05em",
+            fontFamily: '"Tenor Sans", sans-serif',
+          }}>
             10 questions · 4 scent personas
           </div>
         </div>
