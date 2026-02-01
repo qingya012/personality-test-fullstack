@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- bottle -->
+  <rect x="14" y="16" width="36" height="40" rx="8" fill="#ffffff" stroke="#111111" stroke-width="2"/>
+  <rect x="24" y="6" width="16" height="10" rx="3" fill="#111111"/>
+
+  <!-- quadrants -->
+  <rect x="20" y="24" width="10" height="10" rx="2" fill="#f2b6c6"/> <!-- floral -->
+  <rect x="34" y="24" width="10" height="10" rx="2" fill="#f6d87a"/> <!-- fruity -->
+  <rect x="20" y="38" width="10" height="10" rx="2" fill="#9bbf9a"/> <!-- woody -->
+  <rect x="34" y="38" width="10" height="10" rx="2" fill="#d08a54"/> <!-- oriental -->
+</svg>

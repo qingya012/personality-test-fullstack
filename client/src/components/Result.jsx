@@ -169,6 +169,7 @@ export default function Result({ result, winner, onRestart, displayName }) {
 
           {/* title + description */}
           <h1
+            className="leading-[1.05] min-w-0"
             style={{
               marginTop: 14,
               fontSize: 44,
@@ -179,7 +180,8 @@ export default function Result({ result, winner, onRestart, displayName }) {
               letterSpacing: "-0.02em",
             }}
           >
-            {displayName}, your persona is <span style={{ fontStyle: "italic" }}>{result?.name ?? "Your Scent Persona"}</span>
+            {displayName}, <br />
+            your persona is <span style={{ fontStyle: "italic" }}>{result?.name ?? "Your Scent Persona"}</span>
           </h1>
 
           {pct !== null && (
